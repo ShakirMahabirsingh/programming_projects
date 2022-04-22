@@ -1,0 +1,84 @@
+#include <cs50.h>
+#include <stdio.h>
+#include <math.h>
+
+//Declare functions
+long get_code(void);
+long getDigits(long numbers);
+
+int main(void)
+{
+    //Function to get code from user
+    long numbers = get_code();
+
+    //Function to obtain first two digits
+    long digits = getDigits(numbers);
+
+    //Checksum Calculation
+    int sumOthers = 0;
+    int sumEven = 0;
+    int sumTotal = 0;
+    int splitcounter;
+
+    for (splitcounter = 0; numbers > 1; splitcounter++)
+    {
+        int splitDigits = (numbers % 10); //This has to come first to recognize last number before getting chopped off
+        int tempdigits = (numbers /= 10);
+
+        if (splitcounter % 2 == 1) //if the remainder of /2 == 1 (odd)
+        {
+            int right = ((splitDigits*2) % 10);
+            int left = ((splitDigits*2)/10);
+            sumOthers = sumOthers + (right + left);
+        }
+        else if (splitcounter % 2 == 0) //if the remainder of /2 == 0 (even)
+        {
+            sumEven = (sumEven + splitDigits);
+        }
+    }
+
+    sumTotal = (sumOthers + sumEven);
+
+    printf("counter: %i\n", splitcounter);
+
+    //Determine brand + valid/invalid
+
+    if ((digits == 34 || digits == 37) && (splitcounter == 15) && ((sumTotal % 10) == 0))
+    {
+        printf("AMEX\n");
+
+    }
+    else if ((digits == 51 || digits == 52 || digits == 53 || digits == 54 || digits == 55) && (splitcounter == 16) && ((sumTotal % 10) == 0))
+    {
+        printf("MASTERCARD\n");
+    }
+    else if ((digits / 10) == 4 && (splitcounter == 13 || splitcounter == 16) && ((sumTotal % 10) == 0))
+    {
+        printf("VISA\n");
+
+    }
+    else
+    {
+        printf("INVALID\n");
+    }
+
+}
+
+
+//Get code function
+long get_code(void)
+{
+    long code = get_long("Enter Credit Card Number: ");
+    return code;
+}
+
+//Digits function
+long getDigits(long numbers)
+{
+    long digits = 0;
+    for (int digitLength = 2; numbers > 99; digitLength++) //changing condition to >99 gives me frist two digits. Initialize counter at 2 to give length
+    {
+        digits = (numbers /= 10); //gets me the first 2 digit, counter gives me the length
+    }
+    return digits;
+}
